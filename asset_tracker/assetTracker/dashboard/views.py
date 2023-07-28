@@ -1,6 +1,6 @@
 # Chart file.
 from django.shortcuts import render
-from assets.models import AssetTypes, Assets
+from assets.models import Assets
 from rest_framework.views import APIView
 
 class PieChartHandler(APIView):
@@ -29,7 +29,14 @@ class PieChartHandler(APIView):
             else:
                 data[type] = 1
     
-        return render(request, "pie_chart.html", {"labels": list(data.keys()), "data": list(data.values())})
+        return render(
+            request, 
+            "pie_chart.html", 
+            {
+                "labels": list(data.keys()), 
+                "data": list(data.values())
+            }
+        )
 
 class BarChartHandler(APIView):
     """
@@ -57,4 +64,11 @@ class BarChartHandler(APIView):
             else:
                 data["inActive"] += 1
 
-        return render(request, "bar_chart.html", {"activeAssets": data.get("active", 0), "inactiveAssets": data.get("inActive", 0)})
+        return render(
+            request, 
+            "bar_chart.html", 
+            {
+                "activeAssets": data.get("active", 0), 
+                "inactiveAssets": data.get("inActive", 0)
+            }
+        )

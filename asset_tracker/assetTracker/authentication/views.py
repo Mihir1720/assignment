@@ -31,9 +31,21 @@ class LoginHandler(APIView):
         if user is not None:
             login(request, user)
             CustomUser.update(email=email, updated_values={"remember_user": remember_me})
-            return Response({"success": True,"message": get_message("LOGIN_SUCCESSFUL")}, status=status.HTTP_200_OK)
+            return Response(
+                {
+                    "success": True,
+                    "message": get_message("LOGIN_SUCCESSFUL")
+                }, 
+                status=status.HTTP_200_OK
+            )
         else:
-            return Response({"success": False, "message": get_message("LOGIN_FAILED")}, status=status.HTTP_200_OK)
+            return Response(
+                {
+                    "success": False, 
+                    "message": get_message("LOGIN_FAILED")
+                }, 
+                status=status.HTTP_200_OK
+            )
 
 class LogoutHandler(APIView):
     """
@@ -52,7 +64,13 @@ class LogoutHandler(APIView):
 
     def post(self, request):
         logout(request)
-        return Response({"success": True, "message": get_message("LOGOUT_SUCCESSFUL")}, status=status.HTTP_200_OK)
+        return Response(
+            {
+                "success": True, 
+                "message": get_message("LOGOUT_SUCCESSFUL")
+            }, 
+            status=status.HTTP_200_OK
+        )
     
 class EmailPasswordAuthenticationBackend(ModelBackend):
     """

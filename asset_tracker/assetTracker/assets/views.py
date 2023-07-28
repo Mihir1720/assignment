@@ -56,7 +56,13 @@ class AssetTypesHandler(APIView):
                     asset_types = paginator.page(page_number).object_list
                 except Exception:
                     # Invalid Page Number.
-                    return Response({"success": False, "message": messages.get_message("INVALID_PAGE_NUMBER")}, status=status.HTTP_200_OK)
+                    return Response(
+                        {
+                            "success": False, 
+                            "message": messages.get_message("INVALID_PAGE_NUMBER")
+                        }, 
+                        status=status.HTTP_200_OK
+                    )
             for asset_type in asset_types:
                 response_data.append(
                     {
@@ -67,9 +73,21 @@ class AssetTypesHandler(APIView):
                         "updatedAt": utils.convert_datetime_to_string(datetime_obj=asset_type.updated_at), 
                     }
                 )
-            return Response({"success": True, "data": response_data}, status=status.HTTP_200_OK)
+            return Response(
+                {
+                    "success": True, 
+                    "data": response_data
+                }, 
+                status=status.HTTP_200_OK
+            )
         else:
-            return Response({"success": True, "message": messages.get_message("NO_ASSET_TYPES_FOUND")}, status=status.HTTP_200_OK)
+            return Response(
+                {
+                    "success": True, 
+                    "message": messages.get_message("NO_ASSET_TYPES_FOUND")
+                }, 
+                status=status.HTTP_200_OK
+            )
     
     def post(self, request):
         """
@@ -85,12 +103,30 @@ class AssetTypesHandler(APIView):
         """
         data = request.data
         if not data.get("type"):
-            return Response({"success": False, "message": messages.get_message("ASSET_TYPE_IS_MISSING")}, status=status.HTTP_200_OK)
+            return Response(
+                {
+                    "success": False, 
+                    "message": messages.get_message("ASSET_TYPE_IS_MISSING")
+                }, 
+                status=status.HTTP_200_OK
+            )
         asset_type_obj = AssetTypes.add(type=data.get("type"), description=data.get("description", ""))
         if asset_type_obj:
-            return Response({"success": True, "message": messages.get_message("ASSET_TYPE_ADD_SUCCESSFUL")}, status=status.HTTP_201_CREATED)
+            return Response(
+                {
+                    "success": True, 
+                    "message": messages.get_message("ASSET_TYPE_ADD_SUCCESSFUL")
+                }, 
+                status=status.HTTP_201_CREATED
+            )
         else:
-            return Response({"success": False, "message": messages.get_message("SOMETHING_WENT_WRONG")}, status=status.HTTP_200_OK)
+            return Response(
+                {
+                    "success": False, 
+                    "message": messages.get_message("SOMETHING_WENT_WRONG")
+                }, 
+                status=status.HTTP_200_OK
+            )
     
     def put(self, request):
         """
@@ -107,21 +143,45 @@ class AssetTypesHandler(APIView):
         """
         data = request.data
         if data.get("id") is None:
-            return Response({"success": False,"message": messages.get_message("INVALID_ASSET_TYPE")}, status=status.HTTP_200_OK)
+            return Response(
+                {
+                    "success": False,
+                    "message": messages.get_message("INVALID_ASSET_TYPE")
+                }, 
+                status=status.HTTP_200_OK
+            )
         else:
             updated_values = {}
             if data.get("type"):
                 asset_type_obj = AssetTypes.get_by_type(type=data.get("type"))
                 if asset_type_obj:
-                    return Response({"success": False,"message": messages.get_message("ASSET_TYPE_ALREADY_EXIST")}, status=status.HTTP_200_OK)
+                    return Response(
+                        {
+                            "success": False,
+                            "message": messages.get_message("ASSET_TYPE_ALREADY_EXIST")
+                        }, 
+                        status=status.HTTP_200_OK
+                    )
                 updated_values.update({"type": data.get("type")})
             if data.get("description"):
                 updated_values.update({"description": data.get("description")})
             asset_type_obj = AssetTypes.update(id=data.get("id"), updated_values=updated_values)
             if asset_type_obj:
-                return Response({"success": True, "message": messages.get_message("ASSET_TYPE_UPDATE_SUCCESSFUL")}, status=status.HTTP_200_OK)
+                return Response(
+                    {
+                        "success": True, 
+                        "message": messages.get_message("ASSET_TYPE_UPDATE_SUCCESSFUL")
+                    }, 
+                    status=status.HTTP_200_OK
+                )
             else:
-                return Response({"success": False, "message": messages.get_message("SOMETHING_WENT_WRONG")}, status=status.HTTP_200_OK)
+                return Response(
+                    {
+                        "success": False, 
+                        "message": messages.get_message("SOMETHING_WENT_WRONG")
+                    }, 
+                    status=status.HTTP_200_OK
+                )
     
     def delete(self, request):
         """
@@ -136,10 +196,22 @@ class AssetTypesHandler(APIView):
         """
         data = request.GET
         if data.get("id") is None:
-            return Response({"success": False, "message": messages.get_message("INVALID_ASSET_TYPE")}, status=status.HTTP_200_OK)
+            return Response(
+                {
+                    "success": False, 
+                    "message": messages.get_message("INVALID_ASSET_TYPE")
+                }, 
+                status=status.HTTP_200_OK
+            )
         else:
             AssetTypes.delete_by_id(id=data.get("id"))
-            return Response({"success": True, "message": messages.get_message("ASSET_TYPE_DELETE_SUCCESSFUL")}, status=status.HTTP_200_OK)
+            return Response(
+                {
+                    "success": True, 
+                    "message": messages.get_message("ASSET_TYPE_DELETE_SUCCESSFUL")
+                }, 
+                status=status.HTTP_200_OK
+            )
 
 class AssetsHandler(APIView):
     """
@@ -205,9 +277,21 @@ class AssetsHandler(APIView):
                 asset_data = self.get_asset_data(asset=asset)
                 if asset_data:
                     response_data.append(asset_data)
-            return Response({"success": True, "data": response_data}, status=status.HTTP_200_OK)
+            return Response(
+                {
+                    "success": True, 
+                    "data": response_data
+                }, 
+                status=status.HTTP_200_OK
+            )
         else:
-            return Response({"success": True, "message": messages.get_message("NO_ASSETS_FOUND")}, status=status.HTTP_200_OK)
+            return Response(
+                {
+                    "success": True, 
+                    "message": messages.get_message("NO_ASSETS_FOUND")
+                }, 
+                status=status.HTTP_200_OK
+            )
     
     def post(self, request):
         """
@@ -224,9 +308,21 @@ class AssetsHandler(APIView):
         """
         data = request.data
         if not data.get("assetTypeId"):
-            return Response({"success": False, "message": messages.get_message("CANNOT_ADD_ASSET_AS_ASSET_TYPE_IS_MISSING")}, status=status.HTTP_200_OK)
+            return Response(
+                {
+                    "success": False, 
+                    "message": messages.get_message("CANNOT_ADD_ASSET_AS_ASSET_TYPE_IS_MISSING")
+                }, 
+                status=status.HTTP_200_OK
+            )
         if not data.get("name"):
-            return Response({"success": False, "message": messages.get_message("ASSET_NAME_IS_MISSING")}, status=status.HTTP_200_OK)
+            return Response(
+                {
+                    "success": False, 
+                    "message": messages.get_message("ASSET_NAME_IS_MISSING")
+                }, 
+                status=status.HTTP_200_OK
+            )
         asset_type_obj = AssetTypes.get_by_id(id=data.get("assetTypeId"))
         if asset_type_obj:
             try:
@@ -237,15 +333,39 @@ class AssetsHandler(APIView):
                         if data.get("assetImages"):
                             asset_image_obj = AssetImages.add(asset_id=asset_obj, asset_image=data.get("assetImages"))
                             if not asset_image_obj:
-                                return Response({"success": False, "message": messages.get_message("SOMETHING_WENT_WRONG")}, status=status.HTTP_200_OK)
-                        return Response({"success": True, "message": messages.get_message("ASSET_ADD_SUCCESSFUL")}, status=status.HTTP_201_CREATED)
+                                raise Exception
+                        return Response(
+                            {
+                                "success": True, 
+                                "message": messages.get_message("ASSET_ADD_SUCCESSFUL")
+                            }, 
+                            status=status.HTTP_201_CREATED
+                        )
                     else:
-                        return Response({"success": False, "message": messages.get_message("SOMETHING_WENT_WRONG")}, status=status.HTTP_200_OK)
+                        return Response(
+                            {
+                                "success": False, 
+                                "message": messages.get_message("SOMETHING_WENT_WRONG")
+                            }, 
+                            status=status.HTTP_200_OK
+                        )
             except Exception as exc:
                 print("Exception occured in AssetsHandler.post as ", str(exc))
-                return Response({"success": False, "message": messages.get_message("SOMETHING_WENT_WRONG")}, status=status.HTTP_200_OK)
+                return Response(
+                    {
+                        "success": False, 
+                        "message": messages.get_message("SOMETHING_WENT_WRONG")
+                    }, 
+                    status=status.HTTP_200_OK
+                )
         else:
-            return Response({"success": False, "message": messages.get_message("INVALID_ASSET_TYPE")}, status=status.HTTP_200_OK)
+            return Response(
+                {
+                    "success": False, 
+                    "message": messages.get_message("INVALID_ASSET_TYPE")
+                }, 
+                status=status.HTTP_200_OK
+            )
     
     def put(self, request):
         """
@@ -263,7 +383,13 @@ class AssetsHandler(APIView):
         """
         data = request.data
         if data.get("id") is None:
-            return Response({"success": False, "message": messages.get_message("INVALID_ASSET")}, status=status.HTTP_200_OK)
+            return Response(
+                {
+                    "success": False, 
+                    "message": messages.get_message("INVALID_ASSET")
+                }, 
+                status=status.HTTP_200_OK
+            )
         else:
             updated_values = {}
             if data.get("assetTypeId"):
@@ -276,9 +402,21 @@ class AssetsHandler(APIView):
                 updated_values.update({"is_active": data.get("isActive")})
             assets = Assets.update(id=data.get("id"), updated_values=updated_values)
             if assets:
-                return Response({"success": True, "message": messages.get_message("ASSET_UPDATE_SUCCESSFUL")}, status=status.HTTP_200_OK)
+                return Response(
+                    {
+                        "success": True, 
+                        "message": messages.get_message("ASSET_UPDATE_SUCCESSFUL")
+                    }, 
+                    status=status.HTTP_200_OK
+                )
             else:
-                return Response({"success": False, "message": messages.get_message("SOMETHING_WENT_WRONG")}, status=status.HTTP_200_OK)
+                return Response(
+                    {
+                        "success": False, 
+                        "message": messages.get_message("SOMETHING_WENT_WRONG")
+                    }, 
+                    status=status.HTTP_200_OK
+                )
     
     def delete(self, request):
         """
@@ -293,10 +431,22 @@ class AssetsHandler(APIView):
         """
         data = request.GET
         if data.get("id") is None:
-            return Response({"success": False, "message": messages.get_message("INVALID_ASSET")}, status=status.HTTP_200_OK)
+            return Response(
+                {
+                    "success": False, 
+                    "message": messages.get_message("INVALID_ASSET")
+                }, 
+                status=status.HTTP_200_OK
+            )
         else:
             Assets.delete_by_id(id=data.get("id"))
-            return Response({"success": True, "message": messages.get_message("ASSET_DELETE_SUCCESSFUL")}, status=status.HTTP_200_OK)
+            return Response(
+                {
+                    "success": True, 
+                    "message": messages.get_message("ASSET_DELETE_SUCCESSFUL")
+                }, 
+                status=status.HTTP_200_OK
+            )
 
 
 class DownloadAssetsHandler(AssetsHandler):
@@ -320,7 +470,16 @@ class DownloadAssetsHandler(AssetsHandler):
         """
         assets = Assets.get_all()
         if assets:
-            csv_data = [["Name", "Asset Type", "Is Active", "Asset Images", "Created At", "Updated At"]]
+            csv_data = [
+                [
+                    "Name", 
+                    "Asset Type", 
+                    "Is Active", 
+                    "Asset Images", 
+                    "Created At", 
+                    "Updated At"
+                ]
+            ]
             for asset in assets:
                 asset_data = self.get_asset_data(asset=asset, for_report=True)
                 if asset_data:
