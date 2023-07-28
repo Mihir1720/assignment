@@ -18,11 +18,15 @@ def get_message(message):
         "INVALID_ASSET_TYPE": "Please select a valid asset type.",
         "ASSET_TYPE_UPDATE_SUCCESSFUL": "Asset type updated successfully.",
         "ASSET_TYPE_DELETE_SUCCESSFUL": "Asset type deleted successfully.",
+        "ASSET_TYPE_IS_MISSING": "Please enter asset type.",
+        "ASSET_TYPE_ALREADY_EXIST": "This asset type is already exists.",
         "NO_ASSETS_FOUND": "No assets found.",
         "ASSET_ADD_SUCCESSFUL": "Asset added successfully.",
         "INVALID_ASSET": "Please select a valid asset.",
         "ASSET_UPDATE_SUCCESSFUL": "Asset updated successfully.",
         "ASSET_DELETE_SUCCESSFUL": "Asset deleted successfully.",
+        "CANNOT_ADD_ASSET_AS_ASSET_TYPE_IS_MISSING": "Cannot add asset, because asset type is missing.",
+        "ASSET_NAME_IS_MISSING": "Please enter asset name.",
         "SOMETHING_WENT_WRONG": "Something went wrong.",
         "INVALID_PAGE_NUMBER": "Incorrect page number."
     }

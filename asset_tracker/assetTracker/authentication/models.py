@@ -3,7 +3,7 @@ from django.db import models
 
 class CustomUserManager(BaseUserManager):
     """
-    Custom User manage.
+    Custom User manager.
     """
     def create_user(self, email, password=None, **extra_fields):
         if not email:

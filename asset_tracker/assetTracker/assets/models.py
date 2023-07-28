@@ -216,7 +216,7 @@ class AssetImages(models.Model):
         Returns:
             All images matching of given asset id.
         """
-        return cls.objects.filter(asset_id=asset_id).values_list("image")
+        return cls.objects.filter(asset_id=asset_id).values_list("image", flat=True)
 
     @classmethod
     def add(cls, asset_id, asset_image):
@@ -227,14 +227,4 @@ class AssetImages(models.Model):
             asset_image: asset image.
         """
         return cls.objects.create(asset_id=asset_id, image=asset_image)
-
-    @classmethod
-    def update(cls, asset_id):
-        pass
-
-    @classmethod
-    def delete_by_id(cls, id):
-        assets_obj = cls.get_by_id(id=id)
-        if assets_obj:
-            assets_obj.delete()
     

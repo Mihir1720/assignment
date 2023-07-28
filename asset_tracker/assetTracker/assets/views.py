@@ -7,6 +7,7 @@ from common import messages, utils
 from assetTracker.settings import PAGINATION
 from django.http import HttpResponse
 import csv
+from django.db import transaction
 
 class AssetTypesHandler(APIView):
     """
@@ -27,7 +28,7 @@ class AssetTypesHandler(APIView):
         """
         List all asset types.
         Args:
-            None
+            page: Optional(Default: 1)
         Returns:
             [
                 {
@@ -49,12 +50,13 @@ class AssetTypesHandler(APIView):
         if asset_types:
             response_data = []
             paginator = Paginator(asset_types, PAGINATION)
-            page_number = request.GET.get("page", 1)
-            try:
-                asset_types = paginator.page(page_number).object_list
-            except Exception:
-                # Invalid Page Number.
-                return Response({"success": False, "message": messages.get_message("INVALID_PAGE_NUMBER")}, status=status.HTTP_200_OK)
+            page_number = request.GET.get("page")
+            if page_number:
+                try:
+                    asset_types = paginator.page(page_number).object_list
+                except Exception:
+                    # Invalid Page Number.
+                    return Response({"success": False, "message": messages.get_message("INVALID_PAGE_NUMBER")}, status=status.HTTP_200_OK)
             for asset_type in asset_types:
                 response_data.append(
                     {
@@ -71,10 +73,10 @@ class AssetTypesHandler(APIView):
     
     def post(self, request):
         """
-        Add an asset.
+        Add an asset type.
         Args:
             type: Required
-            description: Required
+            description: Optional
         Returns:
             {
                 "success": True,
@@ -82,7 +84,9 @@ class AssetTypesHandler(APIView):
             }
         """
         data = request.data
-        asset_type_obj = AssetTypes.add(type=data.get("type"), description=data.get("description"))
+        if not data.get("type"):
+            return Response({"success": False, "message": messages.get_message("ASSET_TYPE_IS_MISSING")}, status=status.HTTP_200_OK)
+        asset_type_obj = AssetTypes.add(type=data.get("type"), description=data.get("description", ""))
         if asset_type_obj:
             return Response({"success": True, "message": messages.get_message("ASSET_TYPE_ADD_SUCCESSFUL")}, status=status.HTTP_201_CREATED)
         else:
@@ -107,6 +111,9 @@ class AssetTypesHandler(APIView):
         else:
             updated_values = {}
             if data.get("type"):
+                asset_type_obj = AssetTypes.get_by_type(type=data.get("type"))
+                if asset_type_obj:
+                    return Response({"success": False,"message": messages.get_message("ASSET_TYPE_ALREADY_EXIST")}, status=status.HTTP_200_OK)
                 updated_values.update({"type": data.get("type")})
             if data.get("description"):
                 updated_values.update({"description": data.get("description")})
@@ -216,17 +223,29 @@ class AssetsHandler(APIView):
             }
         """
         data = request.data
+        if not data.get("assetTypeId"):
+            return Response({"success": False, "message": messages.get_message("CANNOT_ADD_ASSET_AS_ASSET_TYPE_IS_MISSING")}, status=status.HTTP_200_OK)
+        if not data.get("name"):
+            return Response({"success": False, "message": messages.get_message("ASSET_NAME_IS_MISSING")}, status=status.HTTP_200_OK)
         asset_type_obj = AssetTypes.get_by_id(id=data.get("assetTypeId"))
-        code = str(utils.get_uuid())[:16]
-        asset_obj = Assets.add(name=data.get("name"), code=code, asset_type=asset_type_obj, is_active=data.get("isActive", True))
-        if asset_obj:
-            if data.get("assetImages"):
-                asset_image_obj = AssetImages.add(asset_id=asset_obj, asset_image=data.get("assetImages"))
-                if not asset_image_obj:
-                    return Response({"success": False, "message": messages.get_message("SOMETHING_WENT_WRONG")}, status=status.HTTP_200_OK)
-            return Response({"success": True, "message": messages.get_message("ASSET_ADD_SUCCESSFUL")}, status=status.HTTP_201_CREATED)
+        if asset_type_obj:
+            try:
+                with transaction.atomic():
+                    code = utils.get_uuid()[:16] # WE NEED TO GENERATE UUID of 16 CHARACTERS ONLY.
+                    asset_obj = Assets.add(name=data.get("name"), code=code, asset_type=asset_type_obj, is_active=data.get("isActive", True))
+                    if asset_obj:
+                        if data.get("assetImages"):
+                            asset_image_obj = AssetImages.add(asset_id=asset_obj, asset_image=data.get("assetImages"))
+                            if not asset_image_obj:
+                                return Response({"success": False, "message": messages.get_message("SOMETHING_WENT_WRONG")}, status=status.HTTP_200_OK)
+                        return Response({"success": True, "message": messages.get_message("ASSET_ADD_SUCCESSFUL")}, status=status.HTTP_201_CREATED)
+                    else:
+                        return Response({"success": False, "message": messages.get_message("SOMETHING_WENT_WRONG")}, status=status.HTTP_200_OK)
+            except Exception as exc:
+                print("Exception occured in AssetsHandler.post as ", str(exc))
+                return Response({"success": False, "message": messages.get_message("SOMETHING_WENT_WRONG")}, status=status.HTTP_200_OK)
         else:
-            return Response({"success": False, "message": messages.get_message("SOMETHING_WENT_WRONG")}, status=status.HTTP_200_OK)
+            return Response({"success": False, "message": messages.get_message("INVALID_ASSET_TYPE")}, status=status.HTTP_200_OK)
     
     def put(self, request):
         """
@@ -284,14 +303,14 @@ class DownloadAssetsHandler(AssetsHandler):
     """
     Download Assets API
     Allowed Methods: 
-        POST
+        GET
     Args:
         Request object
     Returns:
         CSV Response.
     """
 
-    def post(self, request):
+    def get(self, request):
         """
         Download all assets through CSV.
         Args:
@@ -307,12 +326,12 @@ class DownloadAssetsHandler(AssetsHandler):
                 if asset_data:
                     csv_data.append(
                         [
-                            asset_data.get("name"), 
-                            asset_data.get("assetType"), 
-                            asset_data.get("isActive"),
-                            asset_data.get("assetImages"),
-                            asset_data.get("createdAt"),
-                            asset_data.get("updatedAt")
+                            asset_data.get("name", ""), 
+                            asset_data.get("assetType", ""), 
+                            asset_data.get("isActive", ""),
+                            asset_data.get("assetImages", ""),
+                            asset_data.get("createdAt", ""),
+                            asset_data.get("updatedAt", "")
                         ]
                     )
             

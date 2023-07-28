@@ -19,6 +19,6 @@ def get_uuid():
     Args:
         None
     Return:
-        UUID String.
+        UUID string.
     """
-    return uuid.uuid4()
+    return str(uuid.uuid4())

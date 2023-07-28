@@ -1,10 +1,13 @@
-# django libraries
+# Django Libraries
 Django==4.2.3
 djangorestframework==3.14.0
 django-seed==0.3.1
 
 # MySQL Library
 mysqlclient==2.2.0
+
+# Dependent Libraries
+psycopg2-binary==2.9.6
 
 
 
