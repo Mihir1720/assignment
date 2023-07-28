@@ -82,9 +82,22 @@ class EmailPasswordAuthenticationBackend(ModelBackend):
     def authenticate(self, request, email=None, password=None, **kwargs):
         custom_auth_model = get_user_model()
         try:
+            if email is None:
+                email = kwargs.get("username")
             user = custom_auth_model.objects.get(email=email)
-        except custom_auth_model.DoesNotExist:
+        except custom_auth_model.DoesNotExist as exc:
+            print("Exception occured in "
+                  "EmailAndPasswordAuthenticationBackend.authenticate as ", str(exc))
             return None
         else:
-            if user.remember_user is True or (user.password == password and user.is_system_admin is True):
+            if user.remember_user is True:
                 return user
+            elif user.check_password(password) and user.is_system_admin is True:
+                return user
+    
+    def get_user(self, user_id):
+        custom_auth_model = get_user_model()
+        try:
+            return custom_auth_model.objects.get(pk=user_id)
+        except custom_auth_model.DoesNotExist:
+            return None

@@ -1,3 +1,6 @@
 from django.contrib import admin
+from assets.models import AssetTypes, Assets, AssetImages
 
-# Register your models here.
+admin.site.register(AssetTypes)
+admin.site.register(Assets)
+admin.site.register(AssetImages)

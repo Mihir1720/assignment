@@ -26,7 +26,7 @@ SECRET_KEY = "django-insecure-+4k0ra(agp(a^^*qd=9zar27767rfd-=fcch*94n!)bgy=3%d#
 # SECURITY WARNING: don"t run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -149,6 +149,7 @@ REST_FRAMEWORK = {
 ALLOWED_REQUEST_HOSTS = [
     "localhost:8000",
     "127.0.0.1:8000",
+    "10.0.120.179:8000"
 ]
 
 PAGINATION = 10
