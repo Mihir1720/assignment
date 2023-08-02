@@ -6,3 +6,9 @@ urlpatterns = [
     path("assets", AssetsHandler.as_view(), name="assets"),
     path("assets/download", DownloadAssetsHandler.as_view(), name="download-assets")
 ]
+
+from django.conf import settings
+from django.conf.urls.static import static
+
+if settings.DEBUG:
+     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

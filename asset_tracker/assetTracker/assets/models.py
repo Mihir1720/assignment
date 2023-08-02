@@ -31,6 +31,17 @@ class AssetTypes(models.Model):
         return cls.objects.all().order_by(order_by)
     
     @classmethod
+    def get_asset_types(cls):
+        """
+        Get all asset types.
+        Args:
+            None
+        Returns:
+            All asset types.
+        """
+        return list(set(cls.get_all().values_list("type", flat=True)))
+    
+    @classmethod
     def get_by_id(cls, id):
         """
         Get asset by id.
@@ -203,7 +214,7 @@ class AssetImages(models.Model):
         db_table = "asset_images"
 
     asset_id = models.ForeignKey(Assets, on_delete=models.CASCADE)
-    image = models.CharField(max_length=255)
+    image = models.ImageField(upload_to="assetImages/")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -216,7 +227,10 @@ class AssetImages(models.Model):
         Returns:
             All images matching of given asset id.
         """
-        return cls.objects.filter(asset_id=asset_id).values_list("image", flat=True)
+        try:
+            return cls.objects.get(asset_id=asset_id)
+        except:
+            return None
 
     @classmethod
     def add(cls, asset_id, asset_image):

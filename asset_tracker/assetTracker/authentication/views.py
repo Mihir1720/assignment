@@ -7,6 +7,14 @@ from django.contrib.auth import get_user_model
 from common.messages import get_message
 from rest_framework import status
 from authentication.models import CustomUser
+from django.shortcuts import render
+
+def index_page(request):
+    print(request.user.is_authenticated)
+    if request.user.is_authenticated:
+        return render(request, "index.html", {"user": request.user.email})
+    else:
+        return render(request, "authentication/login.html")
 
 class LoginHandler(APIView):
     """
@@ -24,9 +32,9 @@ class LoginHandler(APIView):
     permission_classes = []
 
     def post(self, request):
-        email = request.GET.get("email")
-        password = request.GET.get("password")
-        remember_me = request.GET.get("rememberMe", False)
+        email = request.POST.get("email")
+        password = request.POST.get("password")
+        remember_me = request.POST.get("rememberMe", "") == "on"
         user = authenticate(request, email=email, password=password)
         if user is not None:
             login(request, user)
@@ -64,30 +72,26 @@ class LogoutHandler(APIView):
 
     def post(self, request):
         logout(request)
-        return Response(
-            {
-                "success": True, 
-                "message": get_message("LOGOUT_SUCCESSFUL")
-            }, 
-            status=status.HTTP_200_OK
-        )
+        return render(request, "authentication/login.html")
     
 class EmailPasswordAuthenticationBackend(ModelBackend):
     """
     Overrided custom authentication method.
-    We need to implement it, because by default django's authentication can only be done 
+    We need to implement it, because by default django"s authentication can only be done 
     on username field, where here we have a requirement to authenticate through email 
     and password.
     """
     def authenticate(self, request, email=None, password=None, **kwargs):
         custom_auth_model = get_user_model()
+        print(email)
+        print(kwargs)
         try:
             if email is None:
                 email = kwargs.get("username")
             user = custom_auth_model.objects.get(email=email)
         except custom_auth_model.DoesNotExist as exc:
             print("Exception occured in "
-                  "EmailAndPasswordAuthenticationBackend.authenticate as ", str(exc))
+                  "EmailAndPasswordAuthenticationBackend.authenticate as", str(exc))
             return None
         else:
             if user.remember_user is True:

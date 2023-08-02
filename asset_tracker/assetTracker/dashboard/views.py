@@ -31,7 +31,7 @@ class PieChartHandler(APIView):
     
         return render(
             request, 
-            "pie_chart.html", 
+            "dashboard/pie_chart.html", 
             {
                 "labels": list(data.keys()), 
                 "data": list(data.values())
@@ -66,7 +66,7 @@ class BarChartHandler(APIView):
 
         return render(
             request, 
-            "bar_chart.html", 
+            "dashboard/bar_chart.html", 
             {
                 "activeAssets": data.get("active", 0), 
                 "inactiveAssets": data.get("inActive", 0)
