@@ -24,3 +24,4 @@ class HostCheckMiddleware:
                 
         # Allow the request to continue to the view for allowed hosts
         return self.get_response(request)
+

@@ -7,6 +7,13 @@ from django.contrib.auth.hashers import make_password
 def seed_data():
     # Generate Fake data
     seeder = Seed.seeder()
+
+    seeder.add_entity(CustomUser, 1, {
+        'email': "admin@example.com",
+        'password': make_password("admin@123"),
+        'is_system_admin': True,
+        'is_super_user': True
+    })
     
     seeder.add_entity(CustomUser, SEED_SETTINGS, {
         'email': lambda x: seeder.faker.email(),

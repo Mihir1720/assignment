@@ -16,16 +16,20 @@
   <link rel="stylesheet" href="{% static 'dist/css/adminlte.min.css' %}">
 </head>
 <body class="hold-transition login-page">
+  <a href="#" class="brand-link">
+    <img src="{% static 'dist/img/AdminLTELogo.png' %}" alt="" width="60px">
+    <span>Asset Tracker</span>
+  </a>
 <div class="login-box">
   <!-- /.login-logo -->
   <div class="card">
     <div class="card-body login-card-body">
       <p class="login-box-msg">Log In to start your session</p>
 
-      <form action="{% url 'login' %}" method="post">
+      <form action="{% url 'login' %}" method="post" class="loginForm" name="loginForm" onsubmit="return validateForm()">
         {% csrf_token %}
         <div class="input-group mb-3">
-          <input type="email" name="email" class="form-control" placeholder="Email">
+          <input type="email" name="email" class="form-control" placeholder="Enter email" required>
           <div class="input-group-append">
             <div class="input-group-text">
               <span class="fas fa-envelope"></span>
@@ -33,7 +37,7 @@
           </div>
         </div>
         <div class="input-group mb-3">
-          <input type="password" name="password" class="form-control" placeholder="Password">
+          <input type="password" name="password" class="form-control" placeholder="Enter password" required>
           <div class="input-group-append">
             <div class="input-group-text">
               <span class="fas fa-lock"></span>
@@ -69,5 +73,21 @@
 <script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 <!-- AdminLTE App -->
 <script src="{% static 'dist/js/adminlte.min.js' %}"></script>
+<script>
+  function validateForm() {
+    var name = document.forms["loginForm"]["email"].value;
+    var email = document.forms["loginForm"]["password"].value;
+
+    if (email === "") {
+      alert("Please fill out email field.");
+      return false;
+    }
+    if (password === "") {
+      alert("Please fill out password field.");
+      return false;
+    }
+    
+  }
+</script>
 </body>
 </html>

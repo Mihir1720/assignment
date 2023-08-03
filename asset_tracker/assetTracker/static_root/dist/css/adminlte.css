@@ -12565,7 +12565,7 @@ body:not(.layout-fixed) .main-sidebar .sidebar {
 }
 
 .sidebar {
-  height: calc(100% - (3.5rem + 1px));
+  height: 100%;
   overflow-x: hidden;
   overflow-y: initial;
   padding-bottom: 0;

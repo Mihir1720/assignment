@@ -8,11 +8,20 @@ from common.messages import get_message
 from rest_framework import status
 from authentication.models import CustomUser
 from django.shortcuts import render
+from assets.models import AssetTypes, Assets
+from django.urls import reverse
 
 def index_page(request):
-    print(request.user.is_authenticated)
     if request.user.is_authenticated:
-        return render(request, "index.html", {"user": request.user.email})
+        return render(
+            request, 
+            "index.html", 
+            {
+                "user": request.user.email, 
+                "assetTypeCount": AssetTypes.get_count(), 
+                "assetCount": Assets.get_count()
+            }
+        )
     else:
         return render(request, "authentication/login.html")
 
@@ -39,27 +48,23 @@ class LoginHandler(APIView):
         if user is not None:
             login(request, user)
             CustomUser.update(email=email, updated_values={"remember_user": remember_me})
-            return Response(
+            return render(
+                request, 
+                "index.html", 
                 {
-                    "success": True,
-                    "message": get_message("LOGIN_SUCCESSFUL")
-                }, 
-                status=status.HTTP_200_OK
+                    "user": request.user.email, 
+                    "assetTypeCount": AssetTypes.get_count(), 
+                    "assetCount": Assets.get_count()
+                }
             )
         else:
-            return Response(
-                {
-                    "success": False, 
-                    "message": get_message("LOGIN_FAILED")
-                }, 
-                status=status.HTTP_200_OK
-            )
+            return render(request, "error.html", {"message": get_message("LOGIN_FAILED")})
 
 class LogoutHandler(APIView):
     """
     Logout API
     Allowed Methods: 
-        POST
+        GET
     Args:
         Request object
     Returns:
@@ -70,7 +75,7 @@ class LogoutHandler(APIView):
 
     permission_classes = []
 
-    def post(self, request):
+    def get(self, request):
         logout(request)
         return render(request, "authentication/login.html")
     
@@ -83,8 +88,6 @@ class EmailPasswordAuthenticationBackend(ModelBackend):
     """
     def authenticate(self, request, email=None, password=None, **kwargs):
         custom_auth_model = get_user_model()
-        print(email)
-        print(kwargs)
         try:
             if email is None:
                 email = kwargs.get("username")

@@ -58,12 +58,12 @@ class AssetTypesHandler(APIView):
                     asset_types = paginator.page(page_number).object_list
                 except Exception:
                     # Invalid Page Number.
-                    return Response(
+                    return render(
+                        request, 
+                        "error.html", 
                         {
-                            "success": False, 
                             "message": messages.get_message("INVALID_PAGE_NUMBER")
-                        }, 
-                        status=status.HTTP_200_OK
+                        }
                     )
             for asset_type in asset_types:
                 response_data.append(
@@ -75,30 +75,15 @@ class AssetTypesHandler(APIView):
                         "updatedAt": utils.convert_datetime_to_string(datetime_obj=asset_type.updated_at), 
                     }
                 )
-            print(response_data)
             return render(request, "assets/list_asset_types.html", {
                     "success": True, 
                     "data": response_data
                 })
-            return Response(
-                {
-                    "success": True, 
-                    "data": response_data
-                }, 
-                status=status.HTTP_200_OK
-            )
         else:
             return render(request, "assets/list_asset_types.html", {
                     "success": True, 
                     "message": messages.get_message("NO_ASSET_TYPES_FOUND")
                 })
-            return Response(
-                {
-                    "success": True, 
-                    "message": messages.get_message("NO_ASSET_TYPES_FOUND")
-                }, 
-                status=status.HTTP_200_OK
-            )
     
     def post(self, request):
         """
@@ -113,40 +98,33 @@ class AssetTypesHandler(APIView):
             }
         """
         data = request.data
-        print(data)
         if data.get("_method") == "PUT":
             return self.put(request=request)
         elif data.get("_method") == "DELETE":
             return self.delete(request=request)
         elif data.get("renderTemplate") is True:
-            print("Inside")
             return render(request, "assets/add_asset_types.html")
         else:
             if not data.get("type"):
-                return Response(
+                return render(
+                    request, 
+                    "error.html", 
                     {
-                        "success": False, 
                         "message": messages.get_message("ASSET_TYPE_IS_MISSING")
-                    }, 
-                    status=status.HTTP_200_OK
+                    }
                 )
-            asset_type_obj = AssetTypes.add(type=data.get("type"), description=data.get("description", ""))
+            asset_type_obj = AssetTypes.add(
+                type=data.get("type"), description=data.get("description", "")
+            )
             if asset_type_obj:
                 return self.get(request=request)
-                # return Response(
-                #     {
-                #         "success": True, 
-                #         "message": messages.get_message("ASSET_TYPE_ADD_SUCCESSFUL")
-                #     }, 
-                #     status=status.HTTP_201_CREATED
-                # )
             else:
-                return Response(
+                return render(
+                    request, 
+                    "error.html", 
                     {
-                        "success": False, 
                         "message": messages.get_message("SOMETHING_WENT_WRONG")
-                    }, 
-                    status=status.HTTP_200_OK
+                    }
                 )
     
     def put(self, request):
@@ -163,53 +141,52 @@ class AssetTypesHandler(APIView):
             }
         """
         data = request.data
-        print(data)
         if data.get("renderTemplate") is True:
-            print("Inside")
-            return render(request, "assets/update_asset_types.html", {"id": data.get("id")})
+            return render(
+                request, 
+                "assets/update_asset_types.html", 
+                {
+                    "id": data.get("id"), 
+                    "type": data.get("type"), 
+                    "description": data.get("description")
+                }
+            )
         else:
-            print("HET")
             if data.get("id") is None:
-                return Response(
+                return render(
+                    request, 
+                    "error.html", 
                     {
-                        "success": False,
                         "message": messages.get_message("INVALID_ASSET_TYPE")
-                    }, 
-                    status=status.HTTP_200_OK
+                    }
                 )
             else:
-                print("HERE-------")
                 updated_values = {}
-                if data.get("type"):
+                if data.get("type") and not data.get("description"):
                     asset_type_obj = AssetTypes.get_by_type(type=data.get("type"))
                     if asset_type_obj:
-                        return Response(
+                        return render(
+                            request, 
+                            "error.html", 
                             {
-                                "success": False,
                                 "message": messages.get_message("ASSET_TYPE_ALREADY_EXIST")
-                            }, 
-                            status=status.HTTP_200_OK
+                            }
                         )
                     updated_values.update({"type": data.get("type")})
                 if data.get("description"):
                     updated_values.update({"description": data.get("description")})
-                asset_type_obj = AssetTypes.update(id=data.get("id"), updated_values=updated_values)
+                asset_type_obj = AssetTypes.update(
+                    id=data.get("id"), updated_values=updated_values
+                )
                 if asset_type_obj:
                     return self.get(request=request)
-                    return Response(
-                        {
-                            "success": True, 
-                            "message": messages.get_message("ASSET_TYPE_UPDATE_SUCCESSFUL")
-                        }, 
-                        status=status.HTTP_200_OK
-                    )
                 else:
-                    return Response(
+                    return render(
+                        request, 
+                        "error.html", 
                         {
-                            "success": False, 
                             "message": messages.get_message("SOMETHING_WENT_WRONG")
-                        }, 
-                        status=status.HTTP_200_OK
+                        }
                     )
     
     def delete(self, request):
@@ -224,25 +201,17 @@ class AssetTypesHandler(APIView):
             }
         """
         data = request.GET
-        print(data)
         if data.get("id") is None:
-            return Response(
+            return render(
+                request, 
+                "error.html", 
                 {
-                    "success": False, 
                     "message": messages.get_message("INVALID_ASSET_TYPE")
-                }, 
-                status=status.HTTP_200_OK
+                }
             )
         else:
             AssetTypes.delete_by_id(id=data.get("id"))
             return self.get(request=request)
-            return Response(
-                {
-                    "success": True, 
-                    "message": messages.get_message("ASSET_TYPE_DELETE_SUCCESSFUL")
-                }, 
-                status=status.HTTP_200_OK
-            )
 
 class AssetsHandler(APIView):
     """
@@ -265,19 +234,16 @@ class AssetsHandler(APIView):
         if asset_type:
             asset_type = asset_type.type
             asset_images = AssetImages.get_by_asset_id(asset_id=asset.id)
-            # if asset_images:
-            #     print(asset_images[0].url)
             asset_data = {
                     "name": asset.name, 
-                    "isActive": asset.is_active,
+                    "isActive": "Yes" if asset.is_active else "No",
                     "assetType": asset_type, 
-                    "assetImages": asset_images,
+                    "assetImages": asset_images[0] if asset_images else None,
                     "createdAt": utils.convert_datetime_to_string(datetime_obj=asset.created_at),
                     "updatedAt": utils.convert_datetime_to_string(datetime_obj=asset.updated_at) 
                 }
             if for_report is False:
-                asset_data.update({"id": str(asset.id)})   
-        print(asset_data)
+                asset_data.update({"id": str(asset.id)})
         return asset_data
 
     def get(self, request):
@@ -315,25 +281,11 @@ class AssetsHandler(APIView):
                     "success": True, 
                     "data": response_data
                 },)
-            return Response(
-                {
-                    "success": True, 
-                    "data": response_data
-                }, 
-                status=status.HTTP_200_OK
-            )
         else:
             return render(request, "assets/list_assets.html", {
                     "success": True, 
                     "message": messages.get_message("NO_ASSETS_FOUND")
                 })
-            return Response(
-                {
-                    "success": True, 
-                    "message": messages.get_message("NO_ASSETS_FOUND")
-                }, 
-                status=status.HTTP_200_OK
-            )
     
     def post(self, request):
         """
@@ -354,67 +306,72 @@ class AssetsHandler(APIView):
         elif data.get("_method") == "DELETE":
             return self.delete(request=request)
         elif data.get("renderTemplate") is True:
-            return render(request, "assets/add_assets.html", {"assetTypes": AssetTypes.get_all()})
+            return render(
+                request, 
+                "assets/add_assets.html", 
+                {
+                    "assetTypes": AssetTypes.get_all()
+                }
+            )
         else:
             if not data.get("assetTypeId"):
-                return Response(
+                return render(
+                    request, 
+                    "error.html", 
                     {
-                        "success": False, 
                         "message": messages.get_message("CANNOT_ADD_ASSET_AS_ASSET_TYPE_IS_MISSING")
-                    }, 
-                    status=status.HTTP_200_OK
+                    }
                 )
             if not data.get("name"):
-                return Response(
+                return render(
+                    request, 
+                    "error.html", 
                     {
-                        "success": False, 
                         "message": messages.get_message("ASSET_NAME_IS_MISSING")
-                    }, 
-                    status=status.HTTP_200_OK
+                    }
                 )
             asset_type_obj = AssetTypes.get_by_id(id=data.get("assetTypeId"))
             if asset_type_obj:
                 try:
                     with transaction.atomic():
                         code = utils.get_uuid()[:16] # WE NEED TO GENERATE UUID of 16 CHARACTERS ONLY.
-                        asset_obj = Assets.add(name=data.get("name"), code=code, asset_type=asset_type_obj, is_active=data.get("isActive", True))
+                        asset_obj = Assets.add(
+                            name=data.get("name"), 
+                            code=code, 
+                            asset_type=asset_type_obj, 
+                            is_active=data.get("isActive", True)
+                        )
                         if asset_obj:
                             if data.get("assetImages"):
-                                asset_image_obj = AssetImages.add(asset_id=asset_obj, asset_image=data.get("assetImages"))
+                                asset_image_obj = AssetImages.add(
+                                    asset_id=asset_obj, asset_image=data.get("assetImages")
+                                )
                                 if not asset_image_obj:
                                     raise Exception
                             return self.get(request=request)
-                            return Response(
-                                {
-                                    "success": True, 
-                                    "message": messages.get_message("ASSET_ADD_SUCCESSFUL")
-                                }, 
-                                status=status.HTTP_201_CREATED
-                            )
                         else:
-                            return Response(
+                            return render(
+                                request, 
+                                "error.html", 
                                 {
-                                    "success": False, 
                                     "message": messages.get_message("SOMETHING_WENT_WRONG")
-                                }, 
-                                status=status.HTTP_200_OK
+                                }
                             )
                 except Exception as exc:
                     print("Exception occured in AssetsHandler.post as ", str(exc))
-                    return Response(
+                    return render(
+                        request, 
+                        "error.html", 
                         {
-                            "success": False, 
                             "message": messages.get_message("SOMETHING_WENT_WRONG")
-                        }, 
-                        status=status.HTTP_200_OK
+                        }
                     )
             else:
-                return Response(
-                    {
-                        "success": False, 
+                return render(
+                    request, 
+                    "error.html", {
                         "message": messages.get_message("INVALID_ASSET_TYPE")
-                    }, 
-                    status=status.HTTP_200_OK
+                    }
                 )
     
     def put(self, request):
@@ -433,16 +390,23 @@ class AssetsHandler(APIView):
         """
         data = request.data
         if data.get("renderTemplate") is True:
-            print("Inside")
-            return render(request, "assets/update_assets.html", {"id": data.get("id"), "assetTypes": AssetTypes.get_all()})
+            return render(
+                request, 
+                "assets/update_assets.html", 
+                {
+                    "id": data.get("id"), 
+                    "assetTypes": AssetTypes.get_all(), 
+                    "name": data.get("name")
+                }
+            )
         else:
             if data.get("id") is None:
-                return Response(
+                return render(
+                    request, 
+                    "error.html", 
                     {
-                        "success": False, 
                         "message": messages.get_message("INVALID_ASSET")
-                    }, 
-                    status=status.HTTP_200_OK
+                    }
                 )
             else:
                 updated_values = {}
@@ -457,20 +421,13 @@ class AssetsHandler(APIView):
                 assets = Assets.update(id=data.get("id"), updated_values=updated_values)
                 if assets:
                     return self.get(request=request)
-                    return Response(
-                        {
-                            "success": True, 
-                            "message": messages.get_message("ASSET_UPDATE_SUCCESSFUL")
-                        }, 
-                        status=status.HTTP_200_OK
-                    )
                 else:
-                    return Response(
+                    return render(
+                        request, 
+                        "error.html", 
                         {
-                            "success": False, 
                             "message": messages.get_message("SOMETHING_WENT_WRONG")
-                        }, 
-                        status=status.HTTP_200_OK
+                        }
                     )
     
     def delete(self, request):
@@ -486,23 +443,16 @@ class AssetsHandler(APIView):
         """
         data = request.GET
         if data.get("id") is None:
-            return Response(
+            return render(
+                request, 
+                "error.html", 
                 {
-                    "success": False, 
                     "message": messages.get_message("INVALID_ASSET")
-                }, 
-                status=status.HTTP_200_OK
+                }
             )
         else:
             Assets.delete_by_id(id=data.get("id"))
             return self.get(request=request)
-            return Response(
-                {
-                    "success": True, 
-                    "message": messages.get_message("ASSET_DELETE_SUCCESSFUL")
-                }, 
-                status=status.HTTP_200_OK
-            )
 
 
 class DownloadAssetsHandler(AssetsHandler):

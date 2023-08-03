@@ -31,17 +31,6 @@ class AssetTypes(models.Model):
         return cls.objects.all().order_by(order_by)
     
     @classmethod
-    def get_asset_types(cls):
-        """
-        Get all asset types.
-        Args:
-            None
-        Returns:
-            All asset types.
-        """
-        return list(set(cls.get_all().values_list("type", flat=True)))
-    
-    @classmethod
     def get_by_id(cls, id):
         """
         Get asset by id.
@@ -117,6 +106,17 @@ class AssetTypes(models.Model):
         asset_type_obj = cls.get_by_id(id=id)
         if asset_type_obj:
             asset_type_obj.delete()
+    
+    @classmethod
+    def get_count(cls):
+        """
+        Get asset types' count.
+        Args:
+            id: None
+        Returns:
+            Asset Type Count.
+        """
+        return cls.objects.all().count()
 
 
 class Assets(models.Model):
@@ -205,6 +205,17 @@ class Assets(models.Model):
         assets_obj = cls.get_by_id(id=id)
         if assets_obj:
             assets_obj.delete()
+    
+    @classmethod
+    def get_count(cls):
+        """
+        Get assets' count.
+        Args:
+            id: None
+        Returns:
+            Assets count.
+        """
+        return cls.objects.all().count()
 
 class AssetImages(models.Model):
     """
@@ -227,10 +238,7 @@ class AssetImages(models.Model):
         Returns:
             All images matching of given asset id.
         """
-        try:
-            return cls.objects.get(asset_id=asset_id)
-        except:
-            return None
+        return cls.objects.filter(asset_id=asset_id)
 
     @classmethod
     def add(cls, asset_id, asset_image):

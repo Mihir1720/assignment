@@ -1,6 +1,7 @@
 # Utility functions file.
 import datetime
 import uuid
+from dateutil import tz
 
 def convert_datetime_to_string(datetime_obj, format="%d-%m-%Y %H:%m"):
     """
@@ -11,6 +12,8 @@ def convert_datetime_to_string(datetime_obj, format="%d-%m-%Y %H:%m"):
     Returns:
         converted string object.
     """
+    to_zone = tz.gettz("Asia/Kolkata")
+    datetime_obj = datetime_obj.astimezone(to_zone)
     return datetime.datetime.strftime(datetime_obj, format)
 
 def get_uuid():
