@@ -157,7 +157,8 @@ REST_FRAMEWORK = {
 ALLOWED_REQUEST_HOSTS = [
     "localhost:8000",
     "127.0.0.1:8000",
-    "10.0.120.179:8000"
+    "10.0.120.179:8000",
+    "10.0.120.249:8000"
 ]
 
 PAGINATION = 10
