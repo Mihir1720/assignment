@@ -140,7 +140,7 @@
                 <!-- /.card-body -->
 
                 <div class="card-footer">
-                    <a><input type=button value="Back" class="btn-primary">&nbsp;&nbsp;</a>
+                    <a href="{% url 'asset-type' %}"><input type=button value="Back" class="btn-primary">&nbsp;&nbsp;</a>
                     <button type="submit" class="btn-primary">Submit</button>
                 </div>
               </form>
@@ -188,6 +188,25 @@
       }
       
     }
+$(document).ready(function() {
+  if (window.history && window.history.pushState) {
+    window.history.pushState('forward', null, './#forward');
+    $(window).on('popstate', function() {
+      // alert('Back button was pressed.');
+      $.ajax({
+          type: "GET",
+          url: "{% url 'asset-type' %}",
+          contentType: "application/json",
+          success: function(response) {
+            $("body").html(response);
+          },
+          error: function(error) {
+            alert("An error occurred.");
+          }
+        });
+    });
+    }
+});
 </script>
 </body>
 </html>

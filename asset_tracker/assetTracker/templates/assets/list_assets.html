@@ -274,6 +274,25 @@
             event.preventDefault();
         }
       });
+      $(document).ready(function() {
+        if (window.history && window.history.pushState) {
+          window.history.pushState('forward', null, './#forward');
+          $(window).on('popstate', function() {
+            // alert('Back button was pressed.');
+            $.ajax({
+                type: "GET",
+                url: "{% url 'assets' %}",
+                contentType: "application/json",
+                success: function(response) {
+                  $("body").html(response);
+                },
+                error: function(error) {
+                  alert("An error occurred.");
+                }
+              });
+          });
+          }
+      });
       $("#assets-table").DataTable({
         "responsive": true, "lengthChange": false, "autoWidth": false,
         "buttons": ["csv"]
