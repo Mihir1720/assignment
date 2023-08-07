@@ -41,7 +41,7 @@
             </a>
         
             <!-- Sidebar -->
-            <div class="sidebar">
+            <div height="100%" class="sidebar">
                 <!-- Sidebar user panel (optional) -->
                 <div class="user-panel mt-3 pb-3 mb-3 d-flex">
                 <div class="image">
@@ -130,7 +130,7 @@
           </section>
       
           <!-- Main content -->
-          {% if activeAssets or inactiveAssets %}
+          {% if data %}
           <section class="content">
             <div style="width: 80%; margin: auto;">
                 <canvas id="barChart"></canvas>
@@ -142,10 +142,10 @@
                 var barChart = new Chart(ctx, {
                     type: "bar",
                     data: {
-                        labels: ["Active", "Inactive"],
+                        labels: {{labels | safe}},
                         datasets: [{
-                            label: "Asset Status",
-                            data: ["{{activeAssets}}", "{{inactiveAssets}}"],
+                            label: "Assets' Status",
+                            data: {{data | safe}},
                             backgroundColor: [
                                 "rgba(54, 162, 235, 0.7)", // Blue for active assets
                                 "rgba(255, 99, 132, 0.7)", // Red for inactive assets
@@ -224,7 +224,7 @@
   });
   $(document).ready(function() {
   if (window.history && window.history.pushState) {
-    window.history.pushState('forward', null, './#forward');
+    window.history.pushState('forward', null, '');
     $(window).on('popstate', function() {
       // alert('Back button was pressed.');
       $.ajax({

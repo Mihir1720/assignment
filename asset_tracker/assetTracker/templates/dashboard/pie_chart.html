@@ -41,7 +41,7 @@
             </a>
         
             <!-- Sidebar -->
-            <div class="sidebar">
+            <div height="100%" class="sidebar">
                 <!-- Sidebar user panel (optional) -->
                 <div class="user-panel mt-3 pb-3 mb-3 d-flex">
                 <div class="image">
@@ -140,13 +140,14 @@
                 // Create the pie chart
                 var ctx = document.getElementById("pieCharts").getContext("2d");
                 var labels = "{{labels|safe}}"
+                console.log("$$$$$$$$$$", labels)
                 var data = "{{data|safe}}"
                 var pieChart = new Chart(ctx, {
                     type: "pie",
                     data: {
-                        labels: labels.split(),
+                        labels: {{labels | safe}},
                         datasets: [{
-                            data: data,
+                            data: {{data | safe}},
                             backgroundColor: getRandomColors(data.length), // Function to generate random colors
                         }],
                     },
@@ -221,7 +222,7 @@
   });
   $(document).ready(function() {
   if (window.history && window.history.pushState) {
-    window.history.pushState('forward', null, './#forward');
+    window.history.pushState('forward', null, '');
     $(window).on('popstate', function() {
       // alert('Back button was pressed.');
       $.ajax({

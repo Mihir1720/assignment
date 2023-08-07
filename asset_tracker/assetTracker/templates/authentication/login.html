@@ -29,7 +29,7 @@
       <form action="{% url 'login' %}" method="post" class="loginForm" name="loginForm" onsubmit="return validateForm()">
         {% csrf_token %}
         <div class="input-group mb-3">
-          <input type="email" name="email" class="form-control" placeholder="Enter email" value={{user}} required>
+          <input type="email" name="email" class="form-control" placeholder="Enter email" required>
           <div class="input-group-append">
             <div class="input-group-text">
               <span class="fas fa-envelope"></span>
@@ -91,6 +91,25 @@
     }
     
   }
+  $(document).ready(function() {
+        if (window.history && window.history.pushState) {
+          window.history.pushState('forward', null, '');
+          $(window).on('popstate', function() {
+            // alert('Back button was pressed.');
+            $.ajax({
+                type: "GET",
+                url: "{% url 'login' %}",
+                contentType: "application/json",
+                success: function(response) {
+                  $("body").html(response);
+                },
+                error: function(error) {
+                  alert("An error occurred.");
+                }
+              });
+          });
+          }
+      });
 </script>
 </body>
 </html>

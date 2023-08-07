@@ -68,7 +68,7 @@ class BarChartHandler(APIView):
             request, 
             "dashboard/bar_chart.html", 
             {
-                "activeAssets": data.get("active", 0), 
-                "inactiveAssets": data.get("inActive", 0)
+                "labels": ["Active", "Inactive"], 
+                "data": [data.get("active", 0), data.get("inActive", 0)]
             }
         )
