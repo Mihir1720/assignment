@@ -2,6 +2,7 @@
 from django.shortcuts import render
 from assets.models import Assets
 from rest_framework.views import APIView
+from assets.serializers import AssetSerializer
 
 class PieChartHandler(APIView):
     """
@@ -21,8 +22,9 @@ class PieChartHandler(APIView):
         data = {}
 
         assets = Assets.get_all()
-        for asset in assets:
-            type = asset.asset_type.type
+        serializer = AssetSerializer(assets, many=True)
+        for asset in serializer.data:
+            type = asset.get("asset_type")
             if type in data:
                 data[type] += 1
             else:
@@ -55,8 +57,9 @@ class BarChartHandler(APIView):
         data = {"active": 0, "inActive": 0}
 
         assets = Assets.get_all()
-        for asset in assets:
-            if asset.is_active is True:
+        serializer = AssetSerializer(assets, many=True)
+        for asset in serializer.data:
+            if asset.get("is_active", "No") == "Yes":
                 data["active"] += 1
             else:
                 data["inActive"] += 1
