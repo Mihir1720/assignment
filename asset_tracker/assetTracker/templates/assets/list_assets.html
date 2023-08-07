@@ -154,15 +154,17 @@
                                   <tr>
                                       <td>{{asset.id}}</td>
                                       <td>{{asset.name}}</td>
-                                      <td>{{asset.assetType}}</td>
-                                      {% if asset.assetImages %}
-                                      <td><img src="{{ asset.assetImages.image.url }}" alt="" width="80px"></td>
-                                      {% else %}
-                                        <td>-</td>
+                                      <td>{{asset.asset_type}}</td>
+                                      <td>
+                                      {% if asset.asset_images %}
+                                        {% for asset_image in asset.asset_images %}
+                                          <img src="{{ asset_image.image.url }}" alt="" width="80px">
+                                        {% endfor %}
                                       {% endif %}
-                                      <td>{{asset.isActive}}</td>
-                                      <td>{{asset.createdAt}}</td>
-                                      <td>{{asset.updatedAt}}&nbsp;&nbsp;<i class='fas fa-edit update-asset' data-pk="{{asset.id}}" data-name="{{asset.name}}"></i>&nbsp;&nbsp;<i class='fas fa-trash delete-asset' data-pk="{{asset.id}}"></i></td>
+                                      </td>
+                                      <td>{{asset.is_active}}</td>
+                                      <td>{{asset.created_at}}</td>
+                                      <td>{{asset.updated_at}}&nbsp;&nbsp;<i class='fas fa-edit update-asset' data-pk="{{asset.id}}" data-name="{{asset.name}}"></i>&nbsp;&nbsp;<i class='fas fa-trash delete-asset' data-pk="{{asset.id}}"></i></td>
                                   </tr>
                               {% endfor %}
                             </tbody>

@@ -9,6 +9,9 @@ from django.http import HttpResponse
 import csv
 from django.db import transaction
 from django.shortcuts import render
+from assets.serializers import AssetTypeSerializer, AssetSerializer
+import traceback
+from django.template.response import TemplateResponse
 
 
 class AssetTypesHandler(APIView):
@@ -50,6 +53,15 @@ class AssetTypesHandler(APIView):
 ,       """
         asset_types = AssetTypes.get_all()
         if asset_types:
+            serializer = AssetTypeSerializer(asset_types, many=True)
+            asset_types_template = TemplateResponse(
+                request, 
+                "assets/list_asset_types.html", 
+                {
+                    "data": serializer.data
+                }
+            )
+            return asset_types_template.render()
             response_data = []
             paginator = Paginator(asset_types, PAGINATION)
             page_number = request.GET.get("page")
@@ -238,7 +250,7 @@ class AssetsHandler(APIView):
                     "name": asset.name, 
                     "isActive": "Yes" if asset.is_active else "No",
                     "assetType": asset_type, 
-                    "assetImages": asset_images[0] if asset_images else None,
+                    "assetImages": asset_images if asset_images else None,
                     "createdAt": utils.convert_datetime_to_string(datetime_obj=asset.created_at),
                     "updatedAt": utils.convert_datetime_to_string(datetime_obj=asset.updated_at) 
                 }
@@ -272,6 +284,15 @@ class AssetsHandler(APIView):
 ,       """
         assets = Assets.get_all()
         if assets:
+            serializer = AssetSerializer(assets, many=True)
+            assets_template = TemplateResponse(
+                request, 
+                "assets/list_assets.html", 
+                {
+                    "data": serializer.data
+                }
+            )
+            return assets_template.render()
             response_data = []
             for asset in assets:
                 asset_data = self.get_asset_data(asset=asset)
@@ -342,12 +363,14 @@ class AssetsHandler(APIView):
                             is_active=data.get("isActive", True)
                         )
                         if asset_obj:
-                            if data.get("assetImages"):
-                                asset_image_obj = AssetImages.add(
-                                    asset_id=asset_obj, asset_image=data.get("assetImages")
-                                )
-                                if not asset_image_obj:
-                                    raise Exception
+                            asset_images = request.FILES.getlist("assetImages", [])
+                            if asset_images:
+                                for a_image in asset_images:
+                                    asset_image_obj = AssetImages.add(
+                                        asset_id=asset_obj, asset_image=a_image
+                                    )
+                                    if not asset_image_obj:
+                                        raise Exception
                             return self.get(request=request)
                         else:
                             return render(
