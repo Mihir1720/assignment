@@ -16,7 +16,6 @@ class PieChartHandler(APIView):
     Returns:
         Render a HTML template.
     """
-    permission_classes = []
 
     def get(self, request):
         data = {}
@@ -51,8 +50,6 @@ class BarChartHandler(APIView):
     Returns:
         Render a HTML template.
     """
-
-    permission_classes = []
 
     def get(self, request):
         data = {"active": 0, "inActive": 0}

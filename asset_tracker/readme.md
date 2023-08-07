@@ -22,9 +22,3 @@ This project has been developed to automate asset management/tracking system for
     3. Execute 'from authentication.seed_data import seed_data
     4. Execute 'seed_data()' - It will generate 10 users by default with some random data for authentication.
 
-# NOTE
-There is no frontend for this project, hence we need to execute each and every functionality from POSTMAN or any third party tool.
-
-
-
-
