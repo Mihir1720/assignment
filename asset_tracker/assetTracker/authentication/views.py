@@ -41,9 +41,9 @@ class LoginHandler(APIView):
     permission_classes = []
 
     def post(self, request):
-        email = request.POST.get("email")
-        password = request.POST.get("password")
-        remember_me = request.POST.get("rememberMe", "") == "on"
+        email = request.data.get("email")
+        password = request.data.get("password")
+        remember_me = request.data.get("rememberMe", "") == "on"
         user = authenticate(request, email=email, password=password)
         if user is not None:
             login(request, user)
@@ -58,7 +58,16 @@ class LoginHandler(APIView):
                 }
             )
         else:
-            return render(request, "error.html", {"message": get_message("LOGIN_FAILED")})
+            return render(
+                request, 
+                "authentication/login.html",
+                {
+                    "success": False, 
+                    "error": True, 
+                    "message": get_message("LOGIN_FAILED"), "user": email
+                }
+            )
+            return Response({"sucess": False, "message": get_message("LOGIN_FAILED")})
 
 class LogoutHandler(APIView):
     """

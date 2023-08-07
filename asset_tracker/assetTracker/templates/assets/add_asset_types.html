@@ -144,6 +144,9 @@
                     <button type="submit" class="btn-primary">Submit</button>
                 </div>
               </form>
+              {% if error %}
+                <div id="errorMessage" style="color: red;">{{message}}</div>
+              {% endif %}
             </div>
             <!-- /.card -->
 

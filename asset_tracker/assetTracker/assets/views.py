@@ -120,8 +120,10 @@ class AssetTypesHandler(APIView):
             if not data.get("type"):
                 return render(
                     request, 
-                    "error.html", 
+                    "assets/add_asset_types.html", 
                     {
+                        "success": False,
+                        "error": True,
                         "message": messages.get_message("ASSET_TYPE_IS_MISSING")
                     }
                 )
@@ -133,8 +135,10 @@ class AssetTypesHandler(APIView):
             else:
                 return render(
                     request, 
-                    "error.html", 
+                    "assets/add_asset_types.html", 
                     {
+                        "success": False,
+                        "error": True,
                         "message": messages.get_message("SOMETHING_WENT_WRONG")
                     }
                 )
@@ -167,8 +171,10 @@ class AssetTypesHandler(APIView):
             if data.get("id") is None:
                 return render(
                     request, 
-                    "error.html", 
+                    "assets/update_asset_types.html", 
                     {
+                        "success": False,
+                        "error": True,
                         "message": messages.get_message("INVALID_ASSET_TYPE")
                     }
                 )
@@ -179,8 +185,10 @@ class AssetTypesHandler(APIView):
                     if asset_type_obj:
                         return render(
                             request, 
-                            "error.html", 
+                            "assets/update_asset_types.html", 
                             {
+                                "success": False,
+                                "error": True,
                                 "message": messages.get_message("ASSET_TYPE_ALREADY_EXIST")
                             }
                         )
@@ -195,8 +203,10 @@ class AssetTypesHandler(APIView):
                 else:
                     return render(
                         request, 
-                        "error.html", 
+                        "assets/update_asset_types.html", 
                         {
+                            "success": False,
+                            "error": True,
                             "message": messages.get_message("SOMETHING_WENT_WRONG")
                         }
                     )
@@ -216,8 +226,10 @@ class AssetTypesHandler(APIView):
         if data.get("id") is None:
             return render(
                 request, 
-                "error.html", 
+                "assets/list_asset_types.html", 
                 {
+                    "success": False,
+                    "error": True,
                     "message": messages.get_message("INVALID_ASSET_TYPE")
                 }
             )
@@ -338,16 +350,20 @@ class AssetsHandler(APIView):
             if not data.get("assetTypeId"):
                 return render(
                     request, 
-                    "error.html", 
+                    "assets/add_assets.html", 
                     {
+                        "success": False,
+                        "error": True,
                         "message": messages.get_message("CANNOT_ADD_ASSET_AS_ASSET_TYPE_IS_MISSING")
                     }
                 )
             if not data.get("name"):
                 return render(
                     request, 
-                    "error.html", 
+                    "assets/add_assets.html", 
                     {
+                        "success": False,
+                        "error": True,
                         "message": messages.get_message("ASSET_NAME_IS_MISSING")
                     }
                 )
@@ -375,8 +391,10 @@ class AssetsHandler(APIView):
                         else:
                             return render(
                                 request, 
-                                "error.html", 
+                                "assets/add_assets.html", 
                                 {
+                                    "success": False,
+                                    "error": True,
                                     "message": messages.get_message("SOMETHING_WENT_WRONG")
                                 }
                             )
@@ -384,15 +402,20 @@ class AssetsHandler(APIView):
                     print("Exception occured in AssetsHandler.post as ", str(exc))
                     return render(
                         request, 
-                        "error.html", 
+                        "assets/add_assets.html", 
                         {
+                            "success": False,
+                            "error": True,
                             "message": messages.get_message("SOMETHING_WENT_WRONG")
                         }
                     )
             else:
                 return render(
                     request, 
-                    "error.html", {
+                    "assets/add_assets.html", 
+                    {
+                        "success": False,
+                        "error": True,
                         "message": messages.get_message("INVALID_ASSET_TYPE")
                     }
                 )
@@ -426,8 +449,10 @@ class AssetsHandler(APIView):
             if data.get("id") is None:
                 return render(
                     request, 
-                    "error.html", 
+                    "assets/update_assets.html", 
                     {
+                        "success": False,
+                        "error": True,
                         "message": messages.get_message("INVALID_ASSET")
                     }
                 )
@@ -447,8 +472,10 @@ class AssetsHandler(APIView):
                 else:
                     return render(
                         request, 
-                        "error.html", 
+                        "assets/update_assets.html", 
                         {
+                            "success": False,
+                            "error": True,
                             "message": messages.get_message("SOMETHING_WENT_WRONG")
                         }
                     )
@@ -468,8 +495,10 @@ class AssetsHandler(APIView):
         if data.get("id") is None:
             return render(
                 request, 
-                "error.html", 
+                "assets/list_assets.html", 
                 {
+                    "success": False,
+                    "error": True,
                     "message": messages.get_message("INVALID_ASSET")
                 }
             )

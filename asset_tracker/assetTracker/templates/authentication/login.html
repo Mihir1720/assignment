@@ -29,7 +29,7 @@
       <form action="{% url 'login' %}" method="post" class="loginForm" name="loginForm" onsubmit="return validateForm()">
         {% csrf_token %}
         <div class="input-group mb-3">
-          <input type="email" name="email" class="form-control" placeholder="Enter email" required>
+          <input type="email" name="email" class="form-control" placeholder="Enter email" value={{user}} required>
           <div class="input-group-append">
             <div class="input-group-text">
               <span class="fas fa-envelope"></span>
@@ -60,6 +60,9 @@
           <!-- /.col -->
         </div>
       </form>
+      {% if error %}
+        <div id="errorMessage" style="color: red;">{{message}}</div>
+      {% endif %}
       <!-- /.social-auth-links -->
     </div>
     <!-- /.login-card-body -->
@@ -75,8 +78,8 @@
 <script src="{% static 'dist/js/adminlte.min.js' %}"></script>
 <script>
   function validateForm() {
-    var name = document.forms["loginForm"]["email"].value;
-    var email = document.forms["loginForm"]["password"].value;
+    var email = document.forms["loginForm"]["email"].value;
+    var password = document.forms["loginForm"]["password"].value;
 
     if (email === "") {
       alert("Please fill out email field.");
