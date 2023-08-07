@@ -62,35 +62,6 @@ class AssetTypesHandler(APIView):
                 }
             )
             return asset_types_template.render()
-            response_data = []
-            paginator = Paginator(asset_types, PAGINATION)
-            page_number = request.GET.get("page")
-            if page_number:
-                try:
-                    asset_types = paginator.page(page_number).object_list
-                except Exception:
-                    # Invalid Page Number.
-                    return render(
-                        request, 
-                        "error.html", 
-                        {
-                            "message": messages.get_message("INVALID_PAGE_NUMBER")
-                        }
-                    )
-            for asset_type in asset_types:
-                response_data.append(
-                    {
-                        "id": str(asset_type.id),
-                        "type": asset_type.type, 
-                        "description": asset_type.description, 
-                        "createdAt": utils.convert_datetime_to_string(datetime_obj=asset_type.created_at),
-                        "updatedAt": utils.convert_datetime_to_string(datetime_obj=asset_type.updated_at), 
-                    }
-                )
-            return render(request, "assets/list_asset_types.html", {
-                    "success": True, 
-                    "data": response_data
-                })
         else:
             return render(request, "assets/list_asset_types.html", {
                     "success": True, 
@@ -305,15 +276,6 @@ class AssetsHandler(APIView):
                 }
             )
             return assets_template.render()
-            response_data = []
-            for asset in assets:
-                asset_data = self.get_asset_data(asset=asset)
-                if asset_data:
-                    response_data.append(asset_data)
-            return render(request, "assets/list_assets.html", {
-                    "success": True, 
-                    "data": response_data
-                },)
         else:
             return render(request, "assets/list_assets.html", {
                     "success": True, 
