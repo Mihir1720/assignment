@@ -152,6 +152,7 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES":(
         "rest_framework.authentication.SessionAuthentication",
     ),
+    "EXCEPTION_HANDLER": "common.exceptions.custom_exception_handler"
 }
 
 ALLOWED_REQUEST_HOSTS = [

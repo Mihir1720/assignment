@@ -142,6 +142,7 @@
                             <tr>
                               <th>Id</th>
                               <th>Name</th>
+                              <th>Code</th>
                               <th>Asset Type</th>
                               <th>Asset Images</th>
                               <th>Active?</th>
@@ -154,12 +155,15 @@
                                   <tr>
                                       <td>{{asset.id}}</td>
                                       <td>{{asset.name}}</td>
+                                      <td>{{asset.code}}</td>
                                       <td>{{asset.asset_type}}</td>
                                       <td>
                                       {% if asset.asset_images %}
                                         {% for asset_image in asset.asset_images %}
-                                          <img src="{{ asset_image.image.url }}" alt="" width="80px">
+                                          <img src="{{ asset_image.image.url }}" alt="" width="70px">
                                         {% endfor %}
+                                      {% else %}
+                                        -
                                       {% endif %}
                                       </td>
                                       <td>{{asset.is_active}}</td>

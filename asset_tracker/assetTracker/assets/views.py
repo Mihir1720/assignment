@@ -10,7 +10,6 @@ import csv
 from django.db import transaction
 from django.shortcuts import render
 from assets.serializers import AssetTypeSerializer, AssetSerializer
-import traceback
 from django.template.response import TemplateResponse
 
 

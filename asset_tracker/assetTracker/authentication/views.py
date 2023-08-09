@@ -1,13 +1,11 @@
 # Authentication views.
 from rest_framework.views import APIView
-from rest_framework.response import Response
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth import get_user_model
 from common.messages import get_message
-from rest_framework import status
 from authentication.models import CustomUser
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from assets.models import AssetTypes, Assets
 from django.urls import reverse
 
@@ -40,6 +38,9 @@ class LoginHandler(APIView):
 
     permission_classes = []
 
+    def get(self, request):
+        return self.post(request)
+
     def post(self, request):
         email = request.data.get("email")
         password = request.data.get("password")
@@ -48,26 +49,18 @@ class LoginHandler(APIView):
         if user is not None:
             login(request, user)
             CustomUser.update(email=email, updated_values={"remember_user": remember_me})
-            return render(
-                request, 
-                "index.html", 
-                {
-                    "user": request.user.email, 
-                    "assetTypeCount": AssetTypes.get_count(), 
-                    "assetCount": Assets.get_count()
-                }
-            )
+            return redirect(reverse("index-page"))
         else:
             return render(
                 request, 
                 "authentication/login.html",
                 {
                     "success": False, 
-                    "error": True, 
-                    "message": get_message("LOGIN_FAILED"), "user": email
+                    "error": True if email is not None else False, 
+                    "message": get_message("LOGIN_FAILED"), 
+                    "user": email
                 }
             )
-            return Response({"sucess": False, "message": get_message("LOGIN_FAILED")})
 
 class LogoutHandler(APIView):
     """
@@ -86,7 +79,7 @@ class LogoutHandler(APIView):
 
     def get(self, request):
         logout(request)
-        return render(request, "authentication/login.html")
+        return redirect(reverse("login"))
     
 class EmailPasswordAuthenticationBackend(ModelBackend):
     """
@@ -95,6 +88,11 @@ class EmailPasswordAuthenticationBackend(ModelBackend):
     on username field, where here we have a requirement to authenticate through email 
     and password.
     """
+    def validate_credentials(self, user, password):
+        if user.check_password(password) and user.is_system_admin is True:
+            return user
+        return None
+    
     def authenticate(self, request, email=None, password=None, **kwargs):
         custom_auth_model = get_user_model()
         try:
@@ -107,9 +105,12 @@ class EmailPasswordAuthenticationBackend(ModelBackend):
             return None
         else:
             if user.remember_user is True:
-                return user
-            elif user.check_password(password) and user.is_system_admin is True:
-                return user
+                if password is not None:
+                    return self.validate_credentials(user=user, password=password)
+                else:
+                    return user
+            else:
+                return self.validate_credentials(user=user, password=password)
     
     def get_user(self, user_id):
         custom_auth_model = get_user_model()
