@@ -1,16 +1,13 @@
-from rest_framework.views import APIView
-from assets.models import AssetTypes, Assets, AssetImages
-from rest_framework.response import Response
-from rest_framework import status
-from django.core.paginator import Paginator
-from common import messages, utils
-from assetTracker.settings import PAGINATION
-from django.http import HttpResponse
 import csv
+
+from assets.models import AssetImages, Assets, AssetTypes
+from assets.serializers import AssetSerializer, AssetTypeSerializer
+from common import messages, utils
 from django.db import transaction
+from django.http import HttpResponse
 from django.shortcuts import render
-from assets.serializers import AssetTypeSerializer, AssetSerializer
 from django.template.response import TemplateResponse
+from rest_framework.views import APIView
 
 
 class AssetTypesHandler(APIView):

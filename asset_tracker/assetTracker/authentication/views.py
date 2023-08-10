@@ -1,13 +1,13 @@
 # Authentication views.
-from rest_framework.views import APIView
-from django.contrib.auth import login, authenticate, logout
-from django.contrib.auth.backends import ModelBackend
-from django.contrib.auth import get_user_model
-from common.messages import get_message
+from assets.models import Assets, AssetTypes
 from authentication.models import CustomUser
-from django.shortcuts import render, redirect
-from assets.models import AssetTypes, Assets
+from common.messages import get_message
+from django.contrib.auth import authenticate, get_user_model, login, logout
+from django.contrib.auth.backends import ModelBackend
+from django.shortcuts import redirect, render
 from django.urls import reverse
+from rest_framework.views import APIView
+
 
 def index_page(request):
     if request.user.is_authenticated:

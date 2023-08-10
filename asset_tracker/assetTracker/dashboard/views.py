@@ -1,8 +1,9 @@
 # Chart file.
-from django.shortcuts import render
 from assets.models import Assets
-from rest_framework.views import APIView
 from assets.serializers import AssetSerializer
+from django.shortcuts import render
+from rest_framework.views import APIView
+
 
 class PieChartHandler(APIView):
     """
